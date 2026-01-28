@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестування та порівняння процесорів та відеокарт</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #1e40af 0%, #1e3a8a 100%);
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+        }
+        
+        nav {
+            background-color: #1e293b;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .nav-item {
+            color: #f1f5f9;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        section {
+            padding: 3rem 0;
+            border-bottom: 1px solid #334155;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #60a5fa;
+            text-align: center;
+        }
+        
+        .section-description {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: #cbd5e1;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background-color: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #334155;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            background-color: #3b82f6;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .specs-list {
+            list-style-type: none;
+        }
+        
+        .specs-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .specs-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .spec-value {
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        
+        .benchmark-bar {
+            height: 20px;
+            background-color: #334155;
+            border-radius: 10px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .benchmark-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+        
+        th {
+            background-color: #1e293b;
+            color: #60a5fa;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #1e293b;
+        }
+        
+        .highlight {
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .warning {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        
+        .search-container {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        #searchInput {
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 50px;
+            border: 2px solid #3b82f6;
+            background-color: #1e293b;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        footer {
+            background-color: #1e293b;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .footer-text {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-container {
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Тестування та порівняння процесорів та відеокарт</h1>
+            <p class="subtitle">Аналіз продуктивності, максимального розгону та рекордів потужності</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container nav-container">
+            <a href="#processors" class="nav-item active">Процесори</a>
+            <a href="#gpus" class="nav-item">Відеокарти</a>
+            <a href="#overclocking" class="nav-item">Розгін</a>
+            <a href="#benchmarks" class="nav-item">Бенчмарки</a>
+            <a href="#records" class="nav-item">Рекорди</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <section id="processors">
+            <h2>Топові процесори 2025</h2>
+            <p class="section-description">Порівняння найпотужніших процесорів на ринку з їхніми основними характеристиками та продуктивністю.</p>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Пошук процесорів або відеокарт...">
+            </div>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-header">AMD Ryzen 9 9950X3D</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Ядер: <span class="spec-value">16</span></li>
+                            <li>Потоків: <span class="spec-value">32</span></li>
+                            <li>Базова частота: <span class="spec-value">4.3 GHz</span></li>
+                            <li>Макс. частота: <span class="spec-value">5.7 GHz</span></li>
+                            <li>Кеш L3: <span class="spec-value">128 MB</span></li>
+                            <li>ТDP: <span class="spec-value">170W</span></li>
+                        </ul>
+                        <div class="benchmark">
+                            <p>Продуктивність у іграх:</p>
+                            <div class="benchmark-bar">
+                                <div class="benchmark-fill" style="width: 98%"></div>
+                            </div>
+                            <p>Максимальний розгін: <span class="highlight">5.9 GHz</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Intel Core Ultra 9-285K</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Ядер: <span class="spec-value">24 (8P+16E)</span></li>
+                            <li>Потоків: <span class="spec-value">32</span></li>
+                            <li>Базова частота: <span class="spec-value">3.2  GHz</span></li>
+                            <li>Макс. частота: <span class="spec-value">5.7 GHz</span></li>
+                            <li>Кеш L3: <span class="spec-value">36 MB</span></li>
+                            <li>ТDP: <span class="spec-value">125W</span></li>
+                        </ul>
+                        <div class="benchmark">
+                            <p>Продуктивність у іграх:</p>
+                            <div class="benchmark-bar">
+                                <div class="benchmark-fill" style="width: 96%"></div>
+                            </div>
+                            <p>Максимальний розгін: <span class="highlight">  6 GHz </span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">AMD Ryzen 7 7800X3D</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Ядер: <span class="spec-value">8</span></li>
+                            <li>Потоків: <span class="spec-value">16</span></li>
+                            <li>Базова частота: <span class="spec-value">4.2 GHz</span></li>
+                            <li>Макс. частота: <span class="spec-value">5.0 GHz</span></li>
+                            <li>Кеш L3: <span class="spec-value">96 MB</span></li>
+                            <li>ТDP: <span class="spec-value">120W</span></li>
+                        </ul>
+                        <div class="benchmark">
+                            <p>Продуктивність у іграх:</p>
+                            <div class="benchmark-bar">
+                                <div class="benchmark-fill" style="width: 95%"></div>
+                            </div>
+                            <p>Максимальний розгін: <span class="highlight">5.0 GHz</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="gpus">
+            <h2>Топові відеокарти 2025</h2>
+            <p class="section-description">Порівняння найпотужніших відеокарт для ігор та робочих станцій з можливостями розгону.</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-header">NVIDIA GeForce RTX 5090</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Архітектура: <span class="spec-value">Ada Lovelace</span></li>
+                            <li>Пам'ять: <span class="spec-value">32 GB GDDR6X</span></li>
+                            <li>Базова частота: <span class="spec-value">2235 MHz</span></li>
+                            <li>Прискорена частота: <span class="spec-value">2520 MHz</span></li>
+                            <li>TDP: <span class="spec-value">600W</span></li>
+                            <li>Трасування променів: <span class="spec-value">4rd Gen</span></li>
+                        </ul>
+                        <div class="benchmark">
+                            <p>Продуктивність у 4K іграх:</p>
+                            <div class="benchmark-bar">
+                                <div class="benchmark-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">AMD Radeon RX 7900 XTX</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Архітектура: <span class="spec-value">RDNA 3</span></li>
+                            <li>Пам'ять: <span class="spec-value">24 GB GDDR6</span></li>
+                            <li>Базова частота: <span class="spec-value">1900 MHz</span></li>
+                            <li>Прискорена частота: <span class="spec-value">2500 MHz</span></li>
+                            <li>TDP: <span class="spec-value">355W</span></li>
+                            <li>Трасування променів: <span class="spec-value">2nd Gen</span></li>
+                        </ul>
+                        <div class="benchmark">
+                            <p>Продуктивність у 4K іграх:</p>
+                            <div class="benchmark-bar">
+                                <div class="benchmark-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">NVIDIA GeForce RTX 4080 Super</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Архітектура: <span class="spec-value">Ada Lovelace</span></li>
+                            <li>Пам'ять: <span class="spec-value">16 GB GDDR6X</span></li>
+                            <li>Базова частота: <span class="spec-value">2295 MHz</span></li>
+                            <li>Прискорена частота: <span class="spec-value">2550 MHz</span></li>
+                            <li>TDP: <span class="spec-value">320W</span></li>
+                            <li>Трасування променів: <span class="spec-value">3rd Gen</span></li>
+                        </ul>
+                        <div class="benchmark">
+                            <p>Продуктивність у 4K іграх:</p>
+                            <div class="benchmark-bar">
+                                <div class="benchmark-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="overclocking">
+            <h2>Максимальний розгін</h2>
+            <p class="section-description">Рекордні значення розгону процесорів та відеокарт, досягнуті ентузіастами з використанням рідкого азоту та інших екстремальних методів охолодження.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Компонент</th>
+                        <th>Базова частота</th>
+                        <th>Розгін</th>
+                        <th>Приріст</th>
+                        <th>Охолодження</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Intel Core i9-14900K</td>
+                        <td>6.0 GHz</td>
+                        <td class="highlight">9130 GHz</td>
+                        <td class="highlight">+18.3%</td>
+                        <td>Рідкий азот</td>
+                    </tr>
+                    <tr>
+                        <td>AMD Ryzen 9 7950X</td>
+                        <td>5.7 GHz</td>
+                        <td class="highlight">6.3 GHz</td>
+                        <td class="highlight">+10.5%</td>
+                        <td>Кастомна водяна</td>
+                    </tr>
+                    <tr>
+                        <td>NVIDIA RTX 4090</td>
+                        <td>2.52 GHz</td>
+                        <td class="highlight">3.1 GHz</td>
+                        <td class="highlight">+23%</td>
+                        <td>Рідкий азот</td>
+                    </tr>
+                    <tr>
+                        <td>AMD RX 7900 XTX</td>
+                        <td>2.5 GHz</td>
+                        <td class="highlight">2.9 GHz</td>
+                        <td class="highlight">+16%</td>
+                        <td>Гібридна водяна</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section id="benchmarks">
+            <h2>Бенчмарки продуктивності</h2>
+            <p class="section-description">Результати тестування процесорів та відеокарт у популярних бенчмарках та іграх.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Модель</th>
+                        <th>3DMark Time Spy</th>
+                        <th>Cinebench R23</th>
+                        <th>Cyberpunk 2077 (4K)</th>
+                        <th>Загальна оцінка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>RTX 5090 + ryzen 9 9950x3d </td>
+                        <td>32,450</td>
+                        <td>41,250</td>
+                        <td>150 fps</td>
+                        <td class="highlight">98/100</td>
+                    </tr>
+                    <tr>
+                        <td>RTX 4090 + Ryzen 9 7950X3D</td>
+                        <td>31,980</td>
+                        <td>38,900</td>
+                        <td>102 fps</td>
+                        <td class="highlight">96/100</td>
+                    </tr>
+                    <tr>
+                        <td>RX 7900 XTX + Ryzen 9 7950X</td>
+                        <td>28,750</td>
+                        <td>38,200</td>
+                        <td>84 fps</td>
+                        <td class="warning">89/100</td>
+                    </tr>
+                    <tr>
+                        <td>RTX 4080 Super + i7-14700K</td>
+                        <td>26,400</td>
+                        <td>34,100</td>
+                        <td>76 fps</td>
+                        <td class="warning">85/100</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section id="records">
+            <h2>Світові рекорди потужності</h2>
+            <p class="section-description">Найвищі досягнення у розгоні та продуктивності, зафіксовані в HWBOT та інших авторитетних джерелах.</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-header">Рекорд розгону CPU</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Процесор: <span class="spec-value">Intel Core i9-14900K</span></li>
+                            <li>Частота: <span class="highlight">9130,33 GHz</span></li>
+                            <li>Ентузіаст: <span class="spec-value">Allen "Splave" Golibersuch</span></li>
+                            <li>Платформа: <span class="spec-value">ASUS ROG Maximus Z790 Apex</span></li>
+                            <li>Охолодження: <span class="spec-value">Рідкий азот</span></li>
+                            <li>Дата: <span class="spec-value">Листопад 2023</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Рекорд 3DMark Time Spy</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Система: <span class="spec-value">2x RTX 4090 + i9-14900K</span></li>
+                            <li>Результат: <span class="highlight">42,150 балів</span></li>
+                            <li>Ентузіаст: <span class="spec-value">Vlad "k|ngp|n" Galinski</span></li>
+                            <li>Охолодження GPU: <span class="spec-value">Рідкий азот</span></li>
+                            <li>Охолодження CPU: <span class="spec-value">Рідкий гелій</span></li>
+                            <li>Дата: <span class="spec-value">Січень 2024</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Найпотужніша ігрова система</div>
+                    <div class="card-content">
+                        <ul class="specs-list">
+                            <li>Процесор: <span class="spec-value">AMD Ryzen 9 9950X3D @ 5.9 GHz</span></li>
+                            <li>Відеокарта: <span class="spec-value">NVIDIA RTX 5090 @ </span></li>
+                            <li>Пам'ять: <span class="spec-value">64 GB DDR5 @ 7200 MHz</span></li>
+                            <li>Блок живлення: <span class="spec-value">1600W Titanium</span></li>
+                            <li>FPS у Cyberpunk 2077: <span class="highlight">142 fps (4K Ultra)</span></li>
+                            <li>Ціна системи: <span class="warning">~$5,200</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p class="footer-text">© 2024 Сайт для тестування та порівняння процесорів та відеокарт</p>
+            <p class="footer-text">Всі дані наведені для інформаційних цілей. Реальні результати можуть відрізнятися.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Навігація
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Видаляємо активний клас у всіх елементів
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Додаємо активний клас до поточного елемента
+                this.classList.add('active');
+                
+                // Прокручуємо до відповідної секції
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Пошук
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Автоматичне оновлення активного пункту меню при прокрутці
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section');
+            const navItems = document.querySelectorAll('.nav-item');
+            let currentSectionId = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                
+                if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                    currentSectionId = '#' + section.getAttribute('id');
+                }
+            });
+            
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === currentSectionId) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
